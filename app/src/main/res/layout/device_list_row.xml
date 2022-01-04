@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/deviceView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:textSize="20sp"
+        android:layout_weight="0.95" />
+
+    <TextView
+        android:id="@+id/deviceIncompat"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="X"
+        android:textStyle="bold"
+        android:textAlignment="textEnd"
+        android:textColor="#E73F3F"
+        android:textSize="20sp"
+        android:layout_weight="0.05"
+        android:visibility="gone" />
+
+</LinearLayout>

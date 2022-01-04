@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Framed</string>
+    <string name="searchingForFramedApps">Searching for open Framed apps on your network...</string>
+    <string name="searchingFoundApps">Found {{count}} open Framed apps.</string>
+    <string name="searchAgain">Search again</string>
+    <string name="ok">OK</string>
+    <string name="helpQMark">?</string>
+    <string name="searchingHelpHeading">Help</string>
+</resources>
