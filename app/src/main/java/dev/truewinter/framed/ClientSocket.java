@@ -34,6 +34,7 @@ public class ClientSocket {
     private Timer receiveTimer;
     private String key = Utils.getRandomString(32);
     private int lastMsgSeconds = 0;
+    private long lastTimestamp = 0;
     private final int TIMEOUT = 1000;
     private final String DELIMITER ="|+|";
     private final int MSG_IN_PARTS = 4;
@@ -88,6 +89,7 @@ public class ClientSocket {
             public void run() {
                 try {
                         send(createGetDataJson());
+                        send(createGetDiagDataJson());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -110,7 +112,7 @@ public class ClientSocket {
 
                     if (!isValid(line)) return;
 
-                    System.out.println("Text received: " + line);
+                    //System.out.println("Text received: " + line);
 
                     if (receivedDataEvent != null) {
                         String[] parts = getPacketParts(line);
@@ -134,7 +136,18 @@ public class ClientSocket {
         return j;
     }
 
-    protected void send(JSONObject json) {
+    private JSONObject createGetDiagDataJson() throws JSONException {
+        JSONObject j = new JSONObject();
+        j.put("messageType", "GetDiagData");
+        j.put("lastTimestamp", lastTimestamp);
+        return j;
+    }
+
+    protected void setLastTimestamp(long t) {
+        this.lastTimestamp = t;
+    }
+
+    private void send(JSONObject json) {
         String iv = Utils.getRandomString(16);
 
         try {

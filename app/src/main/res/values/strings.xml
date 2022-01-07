@@ -1,9 +1,16 @@
 <resources>
     <string name="app_name">Framed</string>
-    <string name="searchingForFramedApps">Searching for open Framed apps on your network...</string>
+    <string name="searchingForFramedApps">Searching for open Framed apps on your network&#8203;</string>
     <string name="searchingFoundApps">Found {{count}} open Framed apps.</string>
     <string name="searchAgain">Search again</string>
     <string name="ok">OK</string>
     <string name="helpQMark">?</string>
     <string name="searchingHelpHeading">Help</string>
+    <string name="cpuIcon">&#xf2db;</string>
+    <string name="memoryIcon">&#xf538;</string>
+    <string name="diskReadIcon">&#xf093;</string>
+    <string name="diskWriteIcon">&#xf019;</string>
+    <string name="downloadIcon">&#xf381;</string>
+    <string name="uploadIcon">&#xf382;</string>
+    <string name="frameIcon">&#xf03d;</string>
 </resources>

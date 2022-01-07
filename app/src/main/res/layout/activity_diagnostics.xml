@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LiveDataActivity">
-
+    tools:context=".DiagnosticsActivity">
     <dev.truewinter.framed.fonts.FontAwesomeSolid
-        android:id="@+id/cpuLabel"
+        android:id="@+id/diagCpuLabel"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="19dp"
@@ -17,127 +16,147 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/cpuData"
+        android:id="@+id/diagCpuData"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="21dp"
         android:text="-"
-        app:layout_constraintStart_toEndOf="@+id/cpuLabel"
+        app:layout_constraintStart_toEndOf="@+id/diagCpuLabel"
         app:layout_constraintTop_toTopOf="parent" />
 
     <dev.truewinter.framed.fonts.FontAwesomeSolid
-        android:id="@+id/memoryLabel"
+        android:id="@+id/diagMemoryLabel"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="19dp"
         android:layout_marginTop="8dp"
         android:text="@string/memoryIcon"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cpuLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/diagCpuLabel" />
 
     <TextView
-        android:id="@+id/memoryData"
+        android:id="@+id/diagMemoryData"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:text="-"
-        app:layout_constraintStart_toEndOf="@+id/memoryLabel"
-        app:layout_constraintTop_toBottomOf="@+id/cpuData" />
+        app:layout_constraintStart_toEndOf="@+id/diagMemoryLabel"
+        app:layout_constraintTop_toBottomOf="@+id/diagCpuData" />
 
     <dev.truewinter.framed.fonts.FontAwesomeSolid
-        android:id="@+id/diskReadLabel"
+        android:id="@+id/diagDiskReadLabel"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="19dp"
         android:layout_marginTop="8dp"
         android:text="@string/diskReadIcon"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/memoryLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/diagMemoryLabel" />
 
     <TextView
-        android:id="@+id/diskReadData"
+        android:id="@+id/diagDiskReadData"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:text="-"
-        app:layout_constraintStart_toEndOf="@+id/diskReadLabel"
-        app:layout_constraintTop_toBottomOf="@+id/memoryData" />
+        app:layout_constraintStart_toEndOf="@+id/diagDiskReadLabel"
+        app:layout_constraintTop_toBottomOf="@+id/diagMemoryData" />
 
     <dev.truewinter.framed.fonts.FontAwesomeSolid
-        android:id="@+id/diskWriteLabel"
+        android:id="@+id/diagDiskWriteLabel"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="19dp"
         android:layout_marginTop="8dp"
         android:text="@string/diskWriteIcon"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/diskReadLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/diagDiskReadLabel" />
 
     <TextView
-        android:id="@+id/diskWriteData"
+        android:id="@+id/diagDiskWriteData"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:text="-"
-        app:layout_constraintStart_toEndOf="@+id/diskWriteLabel"
-        app:layout_constraintTop_toBottomOf="@+id/diskReadData" />
+        app:layout_constraintStart_toEndOf="@+id/diagDiskWriteLabel"
+        app:layout_constraintTop_toBottomOf="@+id/diagDiskReadData" />
 
     <dev.truewinter.framed.fonts.FontAwesomeSolid
-        android:id="@+id/downloadLabel"
+        android:id="@+id/diagDownloadLabel"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="19dp"
         android:layout_marginTop="8dp"
         android:text="@string/downloadIcon"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/diskWriteLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/diagDiskWriteLabel" />
 
     <TextView
-        android:id="@+id/downloadData"
+        android:id="@+id/diagDownloadData"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:text="-"
-        app:layout_constraintStart_toEndOf="@+id/downloadLabel"
-        app:layout_constraintTop_toBottomOf="@+id/diskWriteData" />
+        app:layout_constraintStart_toEndOf="@+id/diagDownloadLabel"
+        app:layout_constraintTop_toBottomOf="@+id/diagDiskWriteData" />
 
     <dev.truewinter.framed.fonts.FontAwesomeSolid
-        android:id="@+id/uploadLabel"
+        android:id="@+id/diagUploadLabel"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="19dp"
         android:layout_marginTop="8dp"
         android:text="@string/uploadIcon"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/downloadLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/diagDownloadLabel" />
 
     <TextView
-        android:id="@+id/uploadData"
+        android:id="@+id/diagUploadData"
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:text="-"
-        app:layout_constraintStart_toEndOf="@+id/uploadLabel"
-        app:layout_constraintTop_toBottomOf="@+id/downloadData" />
+        app:layout_constraintStart_toEndOf="@+id/diagUploadLabel"
+        app:layout_constraintTop_toBottomOf="@+id/diagDownloadData" />
+
+    <dev.truewinter.framed.fonts.FontAwesomeSolid
+        android:id="@+id/diagFrameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="18dp"
+        android:layout_marginStart="19dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/frameIcon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/diagUploadLabel" />
+
+    <TextView
+        android:id="@+id/diagFrameData"
+        android:layout_width="wrap_content"
+        android:layout_height="18dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:text="-"
+        app:layout_constraintStart_toEndOf="@+id/diagFrameLabel"
+        app:layout_constraintTop_toBottomOf="@+id/diagUploadData" />
 
     <View
-        android:id="@+id/liveDataActivityBottomDivider"
+        android:id="@+id/diagActivityBottomDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginBottom="4dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/ldaHelpBtn"
+        app:layout_constraintBottom_toTopOf="@+id/diagHelpBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/versionTextLDA"
+        android:id="@+id/diagVersionText"
         android:layout_width="wrap_content"
         android:layout_height="19dp"
         android:layout_marginStart="24dp"
@@ -146,10 +165,10 @@
         android:text="v0.0.0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/liveDataActivityBottomDivider" />
+        app:layout_constraintTop_toBottomOf="@+id/diagActivityBottomDivider" />
 
     <Button
-        android:id="@+id/ldaHelpBtn"
+        android:id="@+id/diagHelpBtn"
         android:layout_width="37dp"
         android:layout_height="41dp"
         android:layout_marginTop="2dp"
@@ -159,23 +178,24 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <View
-        android:id="@+id/liveDataActivityTopDivider"
+        android:id="@+id/diagActivityTopDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="21dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/uploadLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/diagFrameLabel" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/diagList"
+        android:id="@+id/diagPingsList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
-        app:layout_constraintBottom_toTopOf="@+id/liveDataActivityBottomDivider"
+        app:layout_constraintBottom_toTopOf="@+id/diagActivityBottomDivider"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/liveDataActivityTopDivider"
-        app:layout_constraintTop_toBottomOf="@+id/liveDataActivityTopDivider" />
+        app:layout_constraintStart_toStartOf="@+id/diagActivityTopDivider"
+        app:layout_constraintTop_toBottomOf="@+id/diagActivityTopDivider" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

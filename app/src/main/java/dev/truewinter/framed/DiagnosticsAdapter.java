@@ -11,42 +11,42 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
-public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHolder> {
-    //private List<String> mData;
-    private Map<String, JSONObject> deviceMap;
+public class DiagnosticsAdapter extends RecyclerView.Adapter<DiagnosticsAdapter.ViewHolder> {
+    private Map<String, JSONObject> diagMap;
     private LayoutInflater mInflater;
-    private ItemClickListener mClickListener;
+    private DiagnosticsAdapter.ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    DevicesAdapter(Context context, Map<String, JSONObject> deviceMap) {
+    DiagnosticsAdapter(Context context, Map<String, JSONObject> deviceMap) {
         this.mInflater = LayoutInflater.from(context);
         //this.mData = data;
-        this.deviceMap = deviceMap;
+        this.diagMap = deviceMap;
     }
 
     // inflates the row layout from xml when needed
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.device_list_row, parent, false);
-        return new ViewHolder(view);
+    public DiagnosticsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = mInflater.inflate(R.layout.diag_list_row, parent, false);
+        return new DiagnosticsAdapter.ViewHolder(view);
     }
 
     // binds the data to the TextView in each row
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(DiagnosticsAdapter.ViewHolder holder, int position) {
         //String hostname = mData.get(position);
         try {
-            JSONObject thisObj = deviceMap.get(deviceMap.keySet().toArray()[position]);
-            String hostname = thisObj.getString("hostname");
-            String version = thisObj.getString("version");
-            holder.textView.setText(String.format("%s (v%s)", hostname, version));
-            holder.compatView.setVisibility(View.GONE);
+            JSONObject thisObj = diagMap.get(diagMap.keySet().toArray()[position]);
+            Date date = new Date(Long.parseLong(diagMap.keySet().toArray()[position].toString()));
+            String dateTime = new SimpleDateFormat("D MMM YYYY h:mm:ss a").format(date);
+            int droppedFrames = thisObj.getInt("frames");
+            holder.textView.setText(dateTime);
+            holder.droppedFramesView.setText(String.format(Locale.ENGLISH, "%d", droppedFrames));
 
-            if (!thisObj.getBoolean("_compatible")) {
-                holder.compatView.setVisibility(View.VISIBLE);
-            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -55,22 +55,22 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
     // total number of rows
     @Override
     public int getItemCount() {
-        return deviceMap.size();
+        return diagMap.size();
         //return mData.size();
     }
 
 
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener/*, View.OnLongClickListener*/ {
         TextView textView;
-        TextView compatView;
+        TextView droppedFramesView;
 
         ViewHolder(View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.deviceView);
-            compatView = itemView.findViewById(R.id.deviceIncompat);
+            textView = itemView.findViewById(R.id.diagView);
+            droppedFramesView = itemView.findViewById(R.id.diagDroppedFramesView);
             itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
+            //itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -78,26 +78,26 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
             if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
         }
 
-        @Override
+        /*@Override
         public boolean onLongClick(View view) {
             if (mClickListener != null) mClickListener.onLongClick(view, getAdapterPosition());
             return true;
-        }
+        }*/
     }
 
     // convenience method for getting data at click position
     String getIdFromIndex(int index) {
-        return deviceMap.keySet().toArray()[index].toString();
+        return diagMap.keySet().toArray()[index].toString();
     }
 
     // allows clicks events to be caught
-    void setClickListener(ItemClickListener itemClickListener) {
+    void setClickListener(DiagnosticsAdapter.ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
-        void onLongClick(View view, int position);
+        //void onLongClick(View view, int position);
     }
 }

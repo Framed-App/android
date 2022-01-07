@@ -2,11 +2,16 @@ package dev.truewinter.framed;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,11 +20,19 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
-public class LiveDataActivity extends AppCompatActivity {
+public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAdapter.ItemClickListener {
     private String id;
     private JSONObject deviceData;
+    private DiagnosticsAdapter diagnosticsAdapter;
+    private Map<String, JSONObject> conDiagData = new TreeMap<>(Collections.reverseOrder());
     private ClientSocket clientSocket;
     private Thread networkThread;
 
@@ -46,6 +59,12 @@ public class LiveDataActivity extends AppCompatActivity {
         TextView versionText = findViewById(R.id.versionTextLDA);
         versionText.setText(String.format("v%s", BuildConfig.VERSION_NAME));
 
+        RecyclerView recyclerView = findViewById(R.id.diagList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        diagnosticsAdapter = new DiagnosticsAdapter(this, conDiagData);
+        diagnosticsAdapter.setClickListener(this);
+        recyclerView.setAdapter(diagnosticsAdapter);
+
         Button helpBtn = findViewById(R.id.ldaHelpBtn);
         helpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,14 +88,15 @@ public class LiveDataActivity extends AppCompatActivity {
                     clientSocket.setEventListener(new ReceivedDataEvent() {
                         @Override
                         public void onReceivedData(final String installId, final JSONObject data) {
-                            System.out.println(String.format("Received data from %s", installId));
+                            //System.out.println(String.format("Received data from %s", installId));
 
                             try {
+                                if (!data.has("data")) return;
+                                if (data.get("data").toString().equals("{}")) return;
+
                                 switch (data.getString("messageType")) {
                                     case "PerfData":
-                                        if (!data.has("data")) return;
-                                        if (data.get("data").toString().equals("{}")) return;
-                                        System.out.println(data.toString());
+                                        //System.out.println(data.toString());
 
                                         runOnUiThread(new Runnable() {
                                             @Override
@@ -140,6 +160,37 @@ public class LiveDataActivity extends AppCompatActivity {
                                             }
                                         });
 
+                                        break;
+                                    case "DiagData":
+                                        JSONObject diagData = data.getJSONObject("data");
+                                        long diagNewestTimestamp = 0;
+                                        Iterator<String> keys = diagData.keys();
+                                        List<String> sortedKeys = new ArrayList<>();
+
+                                        while(keys.hasNext()) {
+                                            String key = keys.next();
+                                            if (diagData.get(key) instanceof JSONObject) {
+                                                if (conDiagData.containsKey(key)) return;
+                                                conDiagData.put(key, diagData.getJSONObject(key));
+
+                                                long l = Long.parseLong(key);
+
+                                                if (diagNewestTimestamp < l) {
+                                                    diagNewestTimestamp = l;
+                                                }
+                                            }
+                                        }
+
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                diagnosticsAdapter.notifyDataSetChanged();
+                                            }
+                                        });
+
+                                        if (clientSocket != null) {
+                                            clientSocket.setLastTimestamp(diagNewestTimestamp);
+                                        }
                                         break;
                                 }
                             } catch (JSONException e) {
@@ -219,6 +270,16 @@ public class LiveDataActivity extends AppCompatActivity {
         });
 
         networkThread.start();
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        System.out.println(conDiagData.get(diagnosticsAdapter.getIdFromIndex(position)).toString());
+
+        Intent intent = new Intent(this, DiagnosticsActivity.class);
+        intent.putExtra("time", diagnosticsAdapter.getIdFromIndex(position));
+        intent.putExtra("json", conDiagData.get(diagnosticsAdapter.getIdFromIndex(position)).toString());
+        startActivity(intent);
     }
 
     @Override
