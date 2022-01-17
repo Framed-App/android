@@ -4,19 +4,27 @@ import android.util.Base64;
 
 import org.json.JSONObject;
 
+import java.nio.Buffer;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.CharacterIterator;
 import java.text.DecimalFormat;
 import java.text.StringCharacterIterator;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
+import javax.crypto.ExemptionMechanismException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -78,6 +86,50 @@ public final class Utils {
             e.printStackTrace();
         }
         return publicKey;
+    }
+
+    public static boolean verifySignature(String signature, String message, String publicKey) throws Exception {
+        Signature sig = Signature.getInstance("SHA256withRSA");
+        sig.initVerify(getPublicKey(publicKey));
+        sig.update(message.getBytes());
+        return sig.verify(Base64.decode(signature, Base64.DEFAULT));
+    }
+
+    public static String getKeyFingerprint(String publicKey) throws Exception {
+        publicKey = publicKey.replaceAll("\\\\n", "\n");
+
+        String hash = sha256HashAsBase64(publicKey).toUpperCase()
+                .replaceAll(Pattern.quote("+"), "X")
+                .replaceAll(Pattern.quote("/"), "Z")
+                .substring(0, 6);
+
+        return rotateVowels(hash);
+    }
+
+    // This function is to replace the vowels to prevent
+    // any bad words being produced by the fingerprint function
+    private static String rotateVowels(String string) {
+        final int ROTATE = 1;
+        final String[] chars = new String[] {"A", "E", "I", "O", "U", "Y"};
+        final Set<String> CHARS = new HashSet(Arrays.asList(chars));
+        String[] stringArr = string.split("");
+        String out = "";
+
+        for (int i = 0; i < stringArr.length; i++) {
+            if (CHARS.contains(stringArr[i])) {
+                out += Character.toString((char) ((int) stringArr[i].charAt(0) + ROTATE));
+            } else {
+                out += stringArr[i];
+            }
+        }
+
+        return out;
+    }
+
+    public static String sha256HashAsBase64(String text) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(text.getBytes(StandardCharsets.UTF_8));
+        return Base64.encodeToString(hash, Base64.DEFAULT);
     }
 
     // https://stackoverflow.com/a/3758880

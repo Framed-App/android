@@ -1,8 +1,9 @@
-package dev.truewinter.framed;
+package dev.truewinter.framed.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
@@ -11,6 +12,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Locale;
+
+import dev.truewinter.framed.LicensesActivity;
+import dev.truewinter.framed.MainActivity;
+import dev.truewinter.framed.R;
 
 public class SearchingHelpDialog extends DialogFragment {
     @Override
@@ -27,6 +32,12 @@ public class SearchingHelpDialog extends DialogFragment {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
+                    }
+                }).setNeutralButton("View Licenses", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(getActivity(), LicensesActivity.class);
+                        startActivity(intent);
                     }
                 });
 

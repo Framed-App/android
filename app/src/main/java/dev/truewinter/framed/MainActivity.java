@@ -12,7 +12,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,13 +23,20 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import dev.truewinter.framed.adapters.DevicesAdapter;
+import dev.truewinter.framed.debug.DebugActivity;
+import dev.truewinter.framed.dialogs.DeviceInfoDialog;
+import dev.truewinter.framed.dialogs.SearchingHelpDialog;
+import dev.truewinter.framed.events.DoneFindingDevicesEvent;
+import dev.truewinter.framed.events.FoundDeviceEvent;
+
 public class MainActivity extends AppCompatActivity implements DevicesAdapter.ItemClickListener {
     private boolean searching = false;
     private Map<String, JSONObject> devicesFound = new HashMap<>();
     private DevicesAdapter devicesAdapter;
     private SearchRunnable searchRunnable;
     private Thread networkThread;
-    private final String MIN_SERVER_VERSION = "0.0.5";
+    private final String MIN_SERVER_VERSION = "0.0.6";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,15 @@ public class MainActivity extends AppCompatActivity implements DevicesAdapter.It
         devicesAdapter = new DevicesAdapter(this, devicesFound);
         devicesAdapter.setClickListener(this);
         recyclerView.setAdapter(devicesAdapter);
+
+        findViewById(R.id.framedLogo).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Intent intent = new Intent(MainActivity.this, DebugActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
 
         findViewById(R.id.searchTryAgainBtn).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -106,7 +121,12 @@ public class MainActivity extends AppCompatActivity implements DevicesAdapter.It
                 return;
             }
 
-            Intent intent = new Intent(this, LiveDataActivity.class);
+            /*Intent intent = new Intent(this, LiveDataActivity.class);
+            intent.putExtra("id", devicesAdapter.getIdFromIndex(position));
+            intent.putExtra("json", devicesFound.get(devicesAdapter.getIdFromIndex(position)).toString());
+            startActivity(intent);*/
+
+            Intent intent = new Intent(this, ScannerActivity.class);
             intent.putExtra("id", devicesAdapter.getIdFromIndex(position));
             intent.putExtra("json", devicesFound.get(devicesAdapter.getIdFromIndex(position)).toString());
             startActivity(intent);

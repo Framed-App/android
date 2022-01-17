@@ -2,7 +2,6 @@ package dev.truewinter.framed;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +25,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+
+import dev.truewinter.framed.adapters.DiagnosticsAdapter;
+import dev.truewinter.framed.dialogs.LiveDataHelpDialog;
+import dev.truewinter.framed.events.ReceivedDataEvent;
+import dev.truewinter.framed.events.SocketExceptionEvent;
+import dev.truewinter.framed.events.TimeoutDisconnectEvent;
 
 public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAdapter.ItemClickListener {
     private String id;
@@ -282,17 +286,21 @@ public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAd
         startActivity(intent);
     }
 
-    @Override
-    public void onDestroy() {
+    private void destroyClientSocket() {
         try {
             if (this.clientSocket != null) {
                 this.clientSocket.cancelTimers();
                 this.clientSocket.disconnect();
+                this.clientSocket = null;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    @Override
+    public void onDestroy() {
+        destroyClientSocket();
         networkThread.interrupt();
 
         super.onDestroy();
@@ -300,6 +308,7 @@ public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAd
 
     @Override
     public void onBackPressed() {
+        destroyClientSocket();
         finish();
     }
 }

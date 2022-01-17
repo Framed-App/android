@@ -1,4 +1,4 @@
-package dev.truewinter.framed;
+package dev.truewinter.framed.events;
 
 public interface DoneFindingDevicesEvent {
     public void onFinishedEvent();

@@ -1,4 +1,4 @@
-package dev.truewinter.framed;
+package dev.truewinter.framed.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,13 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+
+import dev.truewinter.framed.R;
 
 public class DiagnosticsPingsAdapter extends RecyclerView.Adapter<DiagnosticsPingsAdapter.ViewHolder> {
     private List<JSONObject> pingList;
@@ -25,7 +22,7 @@ public class DiagnosticsPingsAdapter extends RecyclerView.Adapter<DiagnosticsPin
     private DiagnosticsPingsAdapter.ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    DiagnosticsPingsAdapter(Context context, List<JSONObject> pingList) {
+    public DiagnosticsPingsAdapter(Context context, List<JSONObject> pingList) {
         this.mInflater = LayoutInflater.from(context);
         //this.mData = data;
         this.pingList = pingList;
@@ -87,7 +84,7 @@ public class DiagnosticsPingsAdapter extends RecyclerView.Adapter<DiagnosticsPin
     }
 
     // allows clicks events to be caught
-    void setClickListener(DiagnosticsPingsAdapter.ItemClickListener itemClickListener) {
+    public void setClickListener(DiagnosticsPingsAdapter.ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 

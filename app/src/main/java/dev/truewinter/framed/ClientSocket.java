@@ -18,6 +18,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Pattern;
 
+import dev.truewinter.framed.events.ReceivedDataEvent;
+import dev.truewinter.framed.events.SocketExceptionEvent;
+import dev.truewinter.framed.events.TimeoutDisconnectEvent;
+
 public class ClientSocket {
     private Socket socket;
     private InetSocketAddress inetSocketAddress;
@@ -103,20 +107,23 @@ public class ClientSocket {
             @Override
             public void run() {
                 try {
+                    if (!shouldReceive()) return;
+
                     String line = socketIn.readLine();
 
                     if (line == null) return;
-                    if (!connected) return;
 
                     lastMsgSeconds = 0;
 
-                    if (!isValid(line)) return;
+                    JSONObject j = getDataIfValid(line);
+
+                    if (j == null) return;
 
                     //System.out.println("Text received: " + line);
 
                     if (receivedDataEvent != null) {
-                        String[] parts = getPacketParts(line);
-                        JSONObject j = new JSONObject(Utils.decrypt(Base64.decode(parts[3], Base64.DEFAULT), key, parts[2]));
+                        //String[] parts = getPacketParts(line);
+                        //JSONObject j = new JSONObject(Utils.decrypt(Base64.decode(parts[3], Base64.DEFAULT), key, parts[2]));
                         receivedDataEvent.onReceivedData(installId, j);
                     }
                 } catch (Exception e) {
@@ -128,6 +135,16 @@ public class ClientSocket {
                 }
             }
         }, 0, 100);
+    }
+
+    // To handle a weird edge case
+    private boolean shouldReceive() {
+        if (!connected) return false;
+        if (this.socket.isInputShutdown()) return false;
+        if (this.socket.isOutputShutdown()) return false;
+        if (this.socket.isClosed()) return false;
+
+        return true;
     }
 
     private JSONObject createGetDataJson() throws JSONException {
@@ -196,7 +213,15 @@ public class ClientSocket {
 
         connected = false;
 
-        if (this.socket.isConnected()) {
+        if (!this.socket.isInputShutdown()) {
+            this.socket.shutdownInput();
+        }
+
+        if (!this.socket.isOutputShutdown()) {
+            this.socket.shutdownOutput();
+        }
+
+        if (!this.socket.isClosed()) {
             this.socket.close();
         }
     }
@@ -223,23 +248,25 @@ public class ClientSocket {
         return packet.split(Pattern.quote(DELIMITER));
     }
 
-    private boolean isValid(String packet) {
+    private JSONObject getDataIfValid(String packet) {
         String[] parts = getPacketParts(packet);
-        if (parts.length != MSG_IN_PARTS) return false;
-        if (!parts[0].equals("Framed")) return false;
+        if (parts.length != MSG_IN_PARTS) return null;
+        if (!parts[0].equals("Framed")) return null;
         // If we somehow get a packet not from the connected Framed app, ignore
-        if (!parts[1].equals(this.installId)) return false;
-        if (parts[2].length() == 0) return false;
+        if (!parts[1].equals(this.installId)) return null;
+        if (parts[2].length() == 0) return null;
+
+        JSONObject j;
 
         try {
-            JSONObject j = new JSONObject(Utils.decrypt(Base64.decode(parts[3], Base64.DEFAULT), key, parts[2]));
+            j = new JSONObject(Utils.decrypt(Base64.decode(parts[3], Base64.DEFAULT), key, parts[2]));
 
-            if (!j.has("messageType")) return false;
+            if (!j.has("messageType")) return null;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
 
-        return true;
+        return j;
     }
 }

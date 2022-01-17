@@ -1,4 +1,4 @@
-package dev.truewinter.framed;
+package dev.truewinter.framed.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,6 +13,8 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
+import dev.truewinter.framed.R;
+
 public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHolder> {
     //private List<String> mData;
     private Map<String, JSONObject> deviceMap;
@@ -20,7 +22,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    DevicesAdapter(Context context, Map<String, JSONObject> deviceMap) {
+    public DevicesAdapter(Context context, Map<String, JSONObject> deviceMap) {
         this.mInflater = LayoutInflater.from(context);
         //this.mData = data;
         this.deviceMap = deviceMap;
@@ -86,12 +88,12 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
     }
 
     // convenience method for getting data at click position
-    String getIdFromIndex(int index) {
+    public String getIdFromIndex(int index) {
         return deviceMap.keySet().toArray()[index].toString();
     }
 
     // allows clicks events to be caught
-    void setClickListener(ItemClickListener itemClickListener) {
+    public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 

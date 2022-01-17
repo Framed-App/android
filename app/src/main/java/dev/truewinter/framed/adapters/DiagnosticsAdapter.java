@@ -1,4 +1,4 @@
-package dev.truewinter.framed;
+package dev.truewinter.framed.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,13 +16,15 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+import dev.truewinter.framed.R;
+
 public class DiagnosticsAdapter extends RecyclerView.Adapter<DiagnosticsAdapter.ViewHolder> {
     private Map<String, JSONObject> diagMap;
     private LayoutInflater mInflater;
     private DiagnosticsAdapter.ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    DiagnosticsAdapter(Context context, Map<String, JSONObject> deviceMap) {
+    public DiagnosticsAdapter(Context context, Map<String, JSONObject> deviceMap) {
         this.mInflater = LayoutInflater.from(context);
         //this.mData = data;
         this.diagMap = deviceMap;
@@ -86,12 +88,12 @@ public class DiagnosticsAdapter extends RecyclerView.Adapter<DiagnosticsAdapter.
     }
 
     // convenience method for getting data at click position
-    String getIdFromIndex(int index) {
+    public String getIdFromIndex(int index) {
         return diagMap.keySet().toArray()[index].toString();
     }
 
     // allows clicks events to be caught
-    void setClickListener(DiagnosticsAdapter.ItemClickListener itemClickListener) {
+    public void setClickListener(DiagnosticsAdapter.ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 

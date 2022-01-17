@@ -18,12 +18,11 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+
+import dev.truewinter.framed.adapters.DiagnosticsPingsAdapter;
+import dev.truewinter.framed.dialogs.DiagnosticsHelpDialog;
 
 public class DiagnosticsActivity extends AppCompatActivity {
     private String timestamp;

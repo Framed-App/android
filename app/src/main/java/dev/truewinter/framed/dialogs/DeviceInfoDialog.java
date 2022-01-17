@@ -1,4 +1,4 @@
-package dev.truewinter.framed;
+package dev.truewinter.framed.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,11 +12,13 @@ import org.json.JSONObject;
 
 import java.util.Locale;
 
+import dev.truewinter.framed.R;
+
 public class DeviceInfoDialog extends DialogFragment {
     private String id;
     private JSONObject deviceInfo;
 
-    DeviceInfoDialog(String id, JSONObject deviceInfo) {
+    public DeviceInfoDialog(String id, JSONObject deviceInfo) {
         this.id = id;
         this.deviceInfo = deviceInfo;
     }

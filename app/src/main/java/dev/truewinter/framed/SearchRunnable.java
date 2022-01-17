@@ -1,5 +1,7 @@
 package dev.truewinter.framed;
 
+import android.util.Base64;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,6 +12,9 @@ import java.net.MulticastSocket;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Pattern;
+
+import dev.truewinter.framed.events.DoneFindingDevicesEvent;
+import dev.truewinter.framed.events.FoundDeviceEvent;
 
 public class SearchRunnable implements Runnable {
     private final Timer receiveTimer = new Timer();
@@ -43,8 +48,25 @@ public class SearchRunnable implements Runnable {
                             final JSONObject json = new JSONObject(dataParts[2]);
 
                             if (json.getString("messageType").equals("identify")) {
-                                if (foundDeviceEvent != null) {
-                                    foundDeviceEvent.onFoundDevice(dataParts[1], json);
+                                // Remove publicKey and sig. Done using regex to ensure the JSON order stays as-is.
+                                // This is important as JSON objects are not ordered, and any change to the JSON order
+                                // would render the signature invalid.
+                                String regexTemplate = ",?\"***\":\"[a-zA-Z0-9=_\\-+\\/]+\"";
+                                String toValidate = dataParts[2]
+                                        .replaceAll(regexTemplate.replace("***", "publicKey"), "")
+                                        .replaceAll(regexTemplate.replace("***", "sig"), "");
+
+                                String sig = json.getString("sig");
+                                String publicKey = json.getString("publicKey");
+
+                                try {
+                                    boolean valid = Utils.verifySignature(sig, toValidate, new String(Base64.decode(publicKey, Base64.DEFAULT)));
+
+                                    if (valid && foundDeviceEvent != null) {
+                                        foundDeviceEvent.onFoundDevice(dataParts[1], json);
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
                             }
                         } catch (JSONException e) {

@@ -12,6 +12,7 @@
         android:layout_weight = "1">
 
         <ImageView
+            android:id="@+id/framedLogo"
             android:layout_width="150dp"
             android:layout_height="match_parent"
             android:cropToPadding="false"
