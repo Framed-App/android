@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dev.truewinter.framed.adapters.DevicesAdapter;
-import dev.truewinter.framed.debug.DebugActivity;
+import dev.truewinter.framed.twdebug.DebugActivity;
 import dev.truewinter.framed.dialogs.DeviceInfoDialog;
 import dev.truewinter.framed.dialogs.SearchingHelpDialog;
 import dev.truewinter.framed.events.DoneFindingDevicesEvent;
