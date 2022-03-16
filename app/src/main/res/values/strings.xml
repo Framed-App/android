@@ -5,17 +5,20 @@
     <string name="searchAgain">Search again</string>
     <string name="ok">OK</string>
     <string name="helpQMark">?</string>
-    <string name="searchingHelpHeading">Help</string>
+    <string name="helpHeading">Help</string>
     <string name="cpuIcon">&#xf2db;</string>
     <string name="memoryIcon">&#xf538;</string>
     <string name="diskReadIcon">&#xf093;</string>
     <string name="diskWriteIcon">&#xf019;</string>
     <string name="downloadIcon">&#xf381;</string>
     <string name="uploadIcon">&#xf382;</string>
+    <string name="sceneSwitcherIcon">&#xf074;</string>
+    <string name="currentSceneIcon">&#xf00c;</string>
     <string name="frameIcon">&#xf03d;</string>
     <string name="scannerInstructions">Please scan the QR code from the Framed desktop app settings.</string>
     <string name="scannerAltEntryLabel">Alternatively, enter the code below:</string>
     <string name="camera_permission_denied">Camera permission denied :(</string>
     <string name="code">Code</string>
     <string name="continueLabel">Continue</string>
+    <string name="sceneSwitcherText">Select a scene below to switch to it</string>
 </resources>

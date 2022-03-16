@@ -31,12 +31,15 @@ import dev.truewinter.framed.dialogs.LiveDataHelpDialog;
 import dev.truewinter.framed.events.ReceivedDataEvent;
 import dev.truewinter.framed.events.SocketExceptionEvent;
 import dev.truewinter.framed.events.TimeoutDisconnectEvent;
+import dev.truewinter.framed.fonts.FontAwesomeSolid;
 
 public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAdapter.ItemClickListener {
     private String id;
     private JSONObject deviceData;
     private DiagnosticsAdapter diagnosticsAdapter;
     private Map<String, JSONObject> conDiagData = new TreeMap<>(Collections.reverseOrder());
+    private JSONObject sceneList;
+    private boolean isExpectingSceneList = false;
     private ClientSocket clientSocket;
     private Thread networkThread;
 
@@ -75,6 +78,14 @@ public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAd
             public void onClick(View v) {
                 LiveDataHelpDialog liveDataHelpDialog = new LiveDataHelpDialog();
                 liveDataHelpDialog.show(getSupportFragmentManager(), "ldaHelp");
+            }
+        });
+
+        FontAwesomeSolid sceneSwitcherBtn = findViewById(R.id.sceneSwitcherBtn);
+        sceneSwitcherBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                doGetSceneList();
             }
         });
 
@@ -196,6 +207,14 @@ public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAd
                                             clientSocket.setLastTimestamp(diagNewestTimestamp);
                                         }
                                         break;
+                                    case "SceneList":
+                                        // ensures that a malicious desktop app can't change to the SceneSwitcherActivity
+                                        if (isExpectingSceneList) {
+                                            sceneList = data.getJSONObject("data");
+                                            showSceneSwitcher();
+                                            isExpectingSceneList = false;
+                                        }
+                                        break;
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -284,6 +303,55 @@ public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAd
         intent.putExtra("time", diagnosticsAdapter.getIdFromIndex(position));
         intent.putExtra("json", conDiagData.get(diagnosticsAdapter.getIdFromIndex(position)).toString());
         startActivity(intent);
+    }
+
+    private void showSceneSwitcher() {
+        Intent intent = new Intent(LiveDataActivity.this, SceneSwitcherActivity.class);
+        intent.putExtra("sceneList", sceneList.toString());
+        startActivityForResult(intent, 1);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                String sceneName = data.getStringExtra("scene");
+                doSwitchScenes(sceneName);
+
+                Toast successToast = Toast.makeText(
+                        // Use default toast colours instead of Framed colours
+                        getApplicationContext(),
+                        String.format("Switching to scene: %s", sceneName),
+                        Toast.LENGTH_LONG);
+                successToast.show();
+            }
+        }
+    }
+
+    private void doGetSceneList() {
+        if (clientSocket != null) {
+            isExpectingSceneList = true;
+            clientSocket.addSceneListRequestToQueue();
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // If the user somehow taps the scene switcher button before the ClientSocket is established
+                    Toast errorToast = Toast.makeText(
+                            // Use default toast colours instead of Framed colours
+                            getApplicationContext(),
+                            "You're quite the fast clicker :O. Unfortunately, things aren't ready just yet. Try again in a few seconds.",
+                            Toast.LENGTH_LONG);
+                    errorToast.show();
+                }
+            });
+        }
+    }
+
+    private void doSwitchScenes(String sceneName) {
+        if (clientSocket != null) {
+            clientSocket.addSceneSwitchToQueue(sceneName);
+        }
     }
 
     private void destroyClientSocket() {

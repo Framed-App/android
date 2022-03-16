@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements DevicesAdapter.It
     private DevicesAdapter devicesAdapter;
     private SearchRunnable searchRunnable;
     private Thread networkThread;
-    private final String MIN_SERVER_VERSION = "0.0.6";
+    private final String MIN_SERVER_VERSION = "0.0.8";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

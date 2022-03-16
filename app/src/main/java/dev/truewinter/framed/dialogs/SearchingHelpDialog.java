@@ -28,7 +28,7 @@ public class SearchingHelpDialog extends DialogFragment {
         stringBuilder.append("\n\n");
         stringBuilder.append("Not seeing your device? Make sure your phone is on the same network as your computer, and that Framed is up to date on both.");
 
-        builder.setMessage(stringBuilder).setTitle(R.string.searchingHelpHeading)
+        builder.setMessage(stringBuilder).setTitle(R.string.helpHeading)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();

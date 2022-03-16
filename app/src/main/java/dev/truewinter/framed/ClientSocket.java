@@ -14,8 +14,11 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import dev.truewinter.framed.events.ReceivedDataEvent;
@@ -35,6 +38,8 @@ public class ClientSocket {
     private SocketExceptionEvent socketExceptionEvent;
     private Timer inactiveDisconnectTimer;
     private Timer sendMsgTimer;
+    // tick = 50ms
+    private Timer sendMsgNextTickTimer;
     private Timer receiveTimer;
     private String key = Utils.getRandomString(32);
     private int lastMsgSeconds = 0;
@@ -43,6 +48,9 @@ public class ClientSocket {
     private final String DELIMITER ="|+|";
     private final int MSG_IN_PARTS = 4;
     private final int INACTIVE_DISCONNECT = 10;
+
+    private Map<Integer, JSONObject> messageQueue = new TreeMap<>();
+    private int queueIdCounter = 0;
 
     protected ClientSocket(final String installId, final String publicKey, InetAddress serverAddress, int serverPort) throws Exception {
         this.installId = installId;
@@ -100,7 +108,17 @@ public class ClientSocket {
             }
         }, 0, 1000);
 
-        //send(createGetDataJson());
+        // Couldn't find any better way of doing this on the network thread, so a tick-based system will have to do
+        sendMsgNextTickTimer = new Timer();
+        sendMsgNextTickTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                for (Map.Entry<Integer, JSONObject> entry : messageQueue.entrySet()) {
+                    send(entry.getValue());
+                    messageQueue.remove(entry.getKey());
+                }
+            }
+        }, 0, 50);
 
         receiveTimer = new Timer();
         receiveTimer.scheduleAtFixedRate(new TimerTask() {
@@ -158,6 +176,37 @@ public class ClientSocket {
         j.put("messageType", "GetDiagData");
         j.put("lastTimestamp", lastTimestamp);
         return j;
+    }
+
+    private JSONObject createGetSceneListJson() throws JSONException {
+        JSONObject j = new JSONObject();
+        j.put("messageType", "GetSceneList");
+        return j;
+    }
+
+    private JSONObject createSwitchScenesJson(String sceneName) throws  JSONException {
+        JSONObject j = new JSONObject();
+        j.put("messageType", "SwitchScenes");
+        j.put("sceneName", sceneName);
+        return j;
+    }
+
+    protected void addSceneListRequestToQueue() {
+        try {
+            messageQueue.put(queueIdCounter, createGetSceneListJson());
+            queueIdCounter++;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void addSceneSwitchToQueue(String sceneName) {
+        try {
+            messageQueue.put(queueIdCounter, createSwitchScenesJson(sceneName));
+            queueIdCounter++;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void setLastTimestamp(long t) {
@@ -224,10 +273,13 @@ public class ClientSocket {
         if (!this.socket.isClosed()) {
             this.socket.close();
         }
+
+        messageQueue.clear();
     }
 
     protected void cancelTimers() {
         sendMsgTimer.cancel();
+        sendMsgNextTickTimer.cancel();
         receiveTimer.cancel();
         inactiveDisconnectTimer.cancel();
     }

@@ -18,7 +18,7 @@ public class DiagnosticsHelpDialog extends DialogFragment {
 
         stringBuilder.append("This shows the data Framed collected when dropped frames were detected.");
 
-        builder.setMessage(stringBuilder).setTitle(R.string.searchingHelpHeading)
+        builder.setMessage(stringBuilder).setTitle(R.string.helpHeading)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
