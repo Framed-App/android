@@ -30,6 +30,7 @@ public class ClientSocket {
     private InetSocketAddress inetSocketAddress;
     private String installId;
     private String publicKey;
+    private String password;
     private boolean connected = false;
     private PrintWriter socketOut;
     private BufferedReader socketIn;
@@ -44,6 +45,8 @@ public class ClientSocket {
     private String key = Utils.getRandomString(32);
     private int lastMsgSeconds = 0;
     private long lastTimestamp = 0;
+    private boolean hasSuccessfulConnection = false;
+
     private final int TIMEOUT = 1000;
     private final String DELIMITER ="|+|";
     private final int MSG_IN_PARTS = 4;
@@ -52,9 +55,10 @@ public class ClientSocket {
     private Map<Integer, JSONObject> messageQueue = new TreeMap<>();
     private int queueIdCounter = 0;
 
-    protected ClientSocket(final String installId, final String publicKey, InetAddress serverAddress, int serverPort) throws Exception {
+    protected ClientSocket(final String installId, final String publicKey, InetAddress serverAddress, int serverPort, String password) throws Exception {
         this.installId = installId;
         this.publicKey = publicKey;
+        this.password = password;
         this.socket = new Socket();
         this.inetSocketAddress = new InetSocketAddress(serverAddress, serverPort);
         this.socket.connect(this.inetSocketAddress, TIMEOUT);
@@ -140,14 +144,29 @@ public class ClientSocket {
                     //System.out.println("Text received: " + line);
 
                     if (receivedDataEvent != null) {
-                        //String[] parts = getPacketParts(line);
-                        //JSONObject j = new JSONObject(Utils.decrypt(Base64.decode(parts[3], Base64.DEFAULT), key, parts[2]));
-                        receivedDataEvent.onReceivedData(installId, j);
+                        if (j.getString("messageType").equals("ConnectionStatus")) {
+                            if (j.getBoolean("success")) {
+                                hasSuccessfulConnection = true;
+                            } else {
+                                String errorMsg = "An error occurred while establishing a connection with the desktop app.";
+                                if (j.has("error")) {
+                                    errorMsg = j.getString("error");
+                                }
+
+                                receivedDataEvent.onConnectionError(errorMsg);
+                            }
+                        } else if (j.getString("messageType").equals("SceneListError")) {
+                            receivedDataEvent.onSceneListError(j.getString("error"));
+                        } else {
+                            if (!hasSuccessfulConnection) return;
+                            receivedDataEvent.onReceivedData(installId, j);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
 
                     if (socketExceptionEvent != null) {
+                        if (!hasSuccessfulConnection) return;
                         socketExceptionEvent.onException(e);
                     }
                 }
@@ -244,6 +263,7 @@ public class ClientSocket {
             JSONObject j = new JSONObject();
             j.put("messageType", "KeyExchange");
             j.put("key", key);
+            j.put("password", password);
 
             String decodedPublicKey = new String(Base64.decode(this.publicKey, Base64.DEFAULT), StandardCharsets.UTF_8);
 

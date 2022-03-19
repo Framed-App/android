@@ -36,6 +36,7 @@ import dev.truewinter.framed.fonts.FontAwesomeSolid;
 public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAdapter.ItemClickListener {
     private String id;
     private JSONObject deviceData;
+    private String password;
     private DiagnosticsAdapter diagnosticsAdapter;
     private Map<String, JSONObject> conDiagData = new TreeMap<>(Collections.reverseOrder());
     private JSONObject sceneList;
@@ -56,6 +57,7 @@ public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAd
 
         try {
             this.deviceData = new JSONObject(getIntent().getExtras().getString("json"));
+            this.password = getIntent().getExtras().getString("password");
 
             TextView actionBarTitle = findViewById(R.id.actionBarTitle);
             actionBarTitle.setText(deviceData.getString("hostname"));
@@ -97,7 +99,8 @@ public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAd
                             id,
                             deviceData.getString("publicKey"),
                             InetAddress.getByName(deviceData.getString("ip")),
-                            deviceData.getInt("port")
+                            deviceData.getInt("port"),
+                            password
                     );
 
                     clientSocket.setEventListener(new ReceivedDataEvent() {
@@ -219,6 +222,38 @@ public class LiveDataActivity extends AppCompatActivity implements DiagnosticsAd
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                        }
+
+                        @Override
+                        public void onConnectionError(String errorMsg) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast errorToast = Toast.makeText(
+                                            // Use default toast colours instead of Framed colours
+                                            getApplicationContext(),
+                                            errorMsg,
+                                            Toast.LENGTH_LONG);
+                                    errorToast.show();
+                                    finish();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onSceneListError(String errorMsg) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast errorToast = Toast.makeText(
+                                            // Use default toast colours instead of Framed colours
+                                            getApplicationContext(),
+                                            errorMsg,
+                                            Toast.LENGTH_LONG);
+                                    errorToast.show();
+                                    isExpectingSceneList = false;
+                                }
+                            });
                         }
                     });
 

@@ -64,11 +64,11 @@
         android:layout_marginStart="32dp"
         android:layout_marginBottom="32dp"
         android:backgroundTint="@color/colorPrimary"
-        android:ems="8"
+        android:ems="10"
         android:hint="@string/code"
         android:importantForAutofill="no"
         android:inputType="textShortMessage|textVisiblePassword|textCapCharacters"
-        android:maxLength="6"
+        android:maxLength="13"
         android:textColorHint="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

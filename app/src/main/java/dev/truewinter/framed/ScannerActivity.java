@@ -110,20 +110,20 @@ public class ScannerActivity extends AppCompatActivity {
 
                 System.out.println(codeEntry.getText().toString());
                 System.out.println(fingerprint);
-                if (codeEntry.getText().toString().toUpperCase().equals(fingerprint)) {
-                    handleContinue();
+                System.out.println(codeEntry.getText().toString().contains("-"));
+
+                if (!codeEntry.getText().toString().contains("-")) {
+                    Toast.makeText(getApplicationContext(), "Invalid code. Please ensure that the full code is entered, not only part of it.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                String[] codeParts = codeEntry.getText().toString().split("-");
+
+                if (codeParts[0].toUpperCase().equals(fingerprint)) {
+                    handleContinue(codeParts[1]);
                 } else {
                     Toast.makeText(getApplicationContext(), "Invalid code", Toast.LENGTH_LONG).show();
                 }
-            }
-        });
-
-        continueBtn.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Toast.makeText(getApplicationContext(), "Bypassing fingerprint check. I do hope you're a developer and know what you're doing...", Toast.LENGTH_LONG).show();
-                handleContinue();
-                return false;
             }
         });
     }
@@ -154,7 +154,7 @@ public class ScannerActivity extends AppCompatActivity {
         barcodeView.decodeContinuous(callback);
     }
 
-    private void handleContinue() {
+    private void handleContinue(String password) {
         if (debug) {
             Toast.makeText(getApplicationContext(), "Debug mode, ignoring continue", Toast.LENGTH_LONG).show();
             return;
@@ -165,6 +165,7 @@ public class ScannerActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("id", id);
         intent.putExtra("json", deviceData.toString());
+        intent.putExtra("password", password);
         startActivity(intent);
         finish();
     }
@@ -173,8 +174,25 @@ public class ScannerActivity extends AppCompatActivity {
         @Override
         public void barcodeResult(BarcodeResult result) {
             System.out.println(String.format("Generic QR code result: %b", enableGenericQRCodeScanner));
-            if (!enableGenericQRCodeScanner && result.getText().equals(fingerprint)) {
-                handleContinue();
+            if (!result.getText().contains("-")) {
+                Toast.makeText(getApplicationContext(), "Invalid code", Toast.LENGTH_LONG).show();
+
+                ignoreQRInvalid = true;
+
+                limitToastTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        ignoreQRInvalid = false;
+                    }
+                }, 4000);
+
+                return;
+            }
+
+            String[] codeParts = result.getText().split("-");
+
+            if (!enableGenericQRCodeScanner && codeParts[0].equals(fingerprint)) {
+                handleContinue(codeParts[1]);
             } else {
                 if (ignoreQRInvalid) return;
 
