@@ -18,6 +18,7 @@ import dev.truewinter.framed.R;
 import dev.truewinter.framed.ScannerActivity;
 import dev.truewinter.framed.dialogs.DiagnosticsHelpDialog;
 import dev.truewinter.framed.dialogs.LiveDataHelpDialog;
+import dev.truewinter.framed.dialogs.SceneSwitcherHelpDialog;
 import dev.truewinter.framed.dialogs.SearchingHelpDialog;
 
 public class DebugActivity extends AppCompatActivity implements DebugAdapter.ItemClickListener {
@@ -44,6 +45,7 @@ public class DebugActivity extends AppCompatActivity implements DebugAdapter.Ite
 
         debugMap.add("DiagnosticsHelpDialog");
         debugMap.add("LiveDataHelpDialog");
+        debugMap.add("SceneSwitcherHelpDialog");
         debugMap.add("SearchingHelpDialog");
         debugMap.add("LicensesActivity");
         debugMap.add("ScannerActivity");
@@ -65,6 +67,10 @@ public class DebugActivity extends AppCompatActivity implements DebugAdapter.Ite
             case "LiveDataHelpDialog":
                 LiveDataHelpDialog liveDataHelpDialog = new LiveDataHelpDialog();
                 liveDataHelpDialog.show(getSupportFragmentManager(), "debugLDHelpDialog");
+                break;
+            case "SceneSwitcherHelpDialog":
+                SceneSwitcherHelpDialog sceneSwitcherHelpDialog = new SceneSwitcherHelpDialog();
+                sceneSwitcherHelpDialog.show(getSupportFragmentManager(), "debugSceneSwitcherHelpDialog");
                 break;
             case "SearchingHelpDialog":
                 SearchingHelpDialog searchingHelpDialog = new SearchingHelpDialog();

@@ -33,7 +33,16 @@ public class QRCodeDialog extends DialogFragment {
                         dialog.dismiss();
 
                         if (qrCodeDialogButtonEvent != null) {
-                            qrCodeDialogButtonEvent.onButtonClick();
+                            qrCodeDialogButtonEvent.onOKButtonClick();
+                        }
+                    }
+                }).setNeutralButton("Copy", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+
+                        if (qrCodeDialogButtonEvent != null) {
+                            qrCodeDialogButtonEvent.onCopyButtonClick();
                         }
                     }
                 });

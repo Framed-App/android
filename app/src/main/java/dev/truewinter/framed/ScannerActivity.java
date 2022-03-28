@@ -4,6 +4,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -174,7 +176,7 @@ public class ScannerActivity extends AppCompatActivity {
         @Override
         public void barcodeResult(BarcodeResult result) {
             System.out.println(String.format("Generic QR code result: %b", enableGenericQRCodeScanner));
-            if (!result.getText().contains("-")) {
+            if (!enableGenericQRCodeScanner && !result.getText().contains("-")) {
                 Toast.makeText(getApplicationContext(), "Invalid code", Toast.LENGTH_LONG).show();
 
                 ignoreQRInvalid = true;
@@ -215,7 +217,19 @@ public class ScannerActivity extends AppCompatActivity {
                     qrCodeDialog.show(getSupportFragmentManager(), "qrCodeDialog");
                     qrCodeDialog.setQrCodeDialogButtonListener(new QRCodeDialogButtonEvent() {
                         @Override
-                        public void onButtonClick() {
+                        public void onOKButtonClick() {
+                            ignoreQRInvalid = false;
+                            barcodeView.resume();
+                        }
+
+                        @Override
+                        public void onCopyButtonClick() {
+                            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText("Framed QR Code Reader", result.getText());
+                            clipboard.setPrimaryClip(clip);
+
+                            Toast.makeText(getApplicationContext(), "Copied QR code data to clipboard", Toast.LENGTH_LONG).show();
+
                             ignoreQRInvalid = false;
                             barcodeView.resume();
                         }
