@@ -30,7 +30,8 @@
             tools:replace="screenOrientation" />
         <activity android:name=".DiagnosticsActivity" />
         <activity android:name=".LiveDataActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
