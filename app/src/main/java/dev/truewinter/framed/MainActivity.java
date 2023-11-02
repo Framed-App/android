@@ -17,6 +17,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vdurmont.semver4j.Semver;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -121,11 +123,6 @@ public class MainActivity extends AppCompatActivity implements DevicesAdapter.It
                 return;
             }
 
-            /*Intent intent = new Intent(this, LiveDataActivity.class);
-            intent.putExtra("id", devicesAdapter.getIdFromIndex(position));
-            intent.putExtra("json", devicesFound.get(devicesAdapter.getIdFromIndex(position)).toString());
-            startActivity(intent);*/
-
             Intent intent = new Intent(this, ScannerActivity.class);
             intent.putExtra("id", devicesAdapter.getIdFromIndex(position));
             intent.putExtra("json", devicesFound.get(devicesAdapter.getIdFromIndex(position)).toString());
@@ -191,10 +188,16 @@ public class MainActivity extends AppCompatActivity implements DevicesAdapter.It
                             try {
                                 boolean compatible = true;
                                 String incompatibleSide = "";
-                                if (data.getString("version").compareTo(MIN_SERVER_VERSION) < 0) {
+
+                                Semver serverVersion = new Semver(data.getString("version"));
+                                Semver minClientVersion = new Semver(data.getString("minClientVersion"));
+
+                                if (serverVersion.isLowerThan(MIN_SERVER_VERSION)) {
+                                    //if (data.getString("version").compareTo(MIN_SERVER_VERSION) < 0) {
                                     compatible = false;
                                     incompatibleSide = "server";
-                                } else if (data.getString("minClientVersion").compareTo(BuildConfig.VERSION_NAME) > 0) {
+                                } else if (minClientVersion.isGreaterThan(BuildConfig.VERSION_NAME)) {
+                                //} else if (data.getString("minClientVersion").compareTo(BuildConfig.VERSION_NAME) > 0) {
                                     compatible = false;
                                     incompatibleSide = "client";
                                 }
